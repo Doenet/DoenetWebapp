@@ -4,6 +4,7 @@ const {
   customers,
   revenue,
   users,
+  addresses
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
 
@@ -124,6 +125,39 @@ async function seedCustomers(client) {
     throw error;
   }
 }
+async function seedAddresses(client){
+  try{
+    const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS addresses(
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        customer_id UUID,
+        line1 VARCHAR(255) NOT NULL,
+        line2 VARCHAR(255),
+        city VARCHAR(50) NOT NULL,
+        state VARCHAR(50) NOT NULL,
+        zipcode VARCHAR(255) NOT NULL,
+        country VARCHAR(255) NOT NULL
+      );`;
+      console.log(`Created "addresses" table`);
+      const insertedAddresses = await Promise.all(
+        addresses.map(
+          (addy) => client.sql`
+          INSERT INTO addresses (customer_id, line1,city,state,zipcode,country)
+          VALUES (${addy.customer_id}, ${addy.line1}, ${addy.city}, ${addy.state}, ${addy.zipcode}, ${addy.country});`
+        )
+      );
+      return {
+        createTable,
+        revenue: insertedAddresses,
+      };
+  }
+
+  catch (error) {
+    console.error('Error seeding addresses:', error);
+    throw error;
+  }
+}
+
 
 async function seedRevenue(client) {
   try {
@@ -167,6 +201,7 @@ async function main() {
   await seedCustomers(client);
   await seedInvoices(client);
   await seedRevenue(client);
+  await seedAddresses(client);
 
   await client.end();
 }

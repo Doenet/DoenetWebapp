@@ -71,6 +71,48 @@ const customers = [
     image_url: '/customers/balazs-orban.png',
   },
 ];
+const addresses= [
+  {
+    customer_id: customers[0].id,
+    line1: '720 Jocelyn Ave S',
+    city: 'Minneapolis',
+    state: 'MN',
+    zipcode: '55125',
+    country: 'United States'
+  },
+  {
+    customer_id: customers[1].id,
+    line1: '730 Jocelyn Ave S',
+    city: 'Minneapolis',
+    state: 'MN',
+    zipcode: '55125',
+    country: 'United States'
+  },
+  {
+    customer_id: customers[2].id,
+    line1: '740 Jocelyn Ave S',
+    city: 'Minneapolis',
+    state: 'MN',
+    zipcode: '55125',
+    country: 'United States'
+  },
+  {
+    customer_id: customers[3].id,
+    line1: '750 Jocelyn Ave S',
+    city: 'Minneapolis',
+    state: 'MN',
+    zipcode: '55125',
+    country: 'United States'
+  },
+  {
+    customer_id: customers[0].id,
+    line1: '920 Jocelyn Ave S',
+    city: 'Minneapolis',
+    state: 'MN',
+    zipcode: '55125',
+    country: 'United States'
+  },
+]
 
 const invoices = [
   {
@@ -185,4 +227,5 @@ module.exports = {
   customers,
   invoices,
   revenue,
+  addresses,
 };

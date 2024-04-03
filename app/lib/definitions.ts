@@ -63,6 +63,7 @@ export type CustomersTableType = {
   total_invoices: number;
   total_pending: number;
   total_paid: number;
+  address: string,
 };
 
 export type FormattedCustomersTable = {
