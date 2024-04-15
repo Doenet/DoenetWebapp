@@ -124,7 +124,9 @@ export default async function CustomersTable({
                         {customer.total_paid}
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
-                        {customer.address}
+                        {customer.address.map((address)=>(
+                          address?.line1
+                        ))}
                       </td>
 
                     </tr>

@@ -63,7 +63,7 @@ export type CustomersTableType = {
   total_invoices: number;
   total_pending: number;
   total_paid: number;
-  address: string,
+  address:{id: string, customer_id:string, line1: string, line2: string, city:string, state: string, zipcode: string, country:string }[]
 };
 
 export type FormattedCustomersTable = {
