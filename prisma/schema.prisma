@@ -8,7 +8,7 @@ datasource db {
 }
 
 model activities {
-  activityId    Int             @id @unique(map: "activityId_UNIQUE")
+  activityId    Int             @id @unique(map: "activityId_UNIQUE") @default(autoincrement())
   owner         Int
   name          String?         @db.VarChar(255)
   createdAt     DateTime?       @db.DateTime(0)
@@ -45,7 +45,7 @@ model assignmentItems {
 }
 
 model assignments {
-  assignmentId               Int                          @id @unique(map: "assignmentId_UNIQUE")
+  assignmentId               Int                          @id @unique(map: "assignmentId_UNIQUE") @default(autoincrement())
   classCode                  String?                      @db.VarChar(45)
   activityId                 Int
   owner                      Int
@@ -71,10 +71,11 @@ model documentVersions {
 }
 
 model documents {
-  docId            Int                @id @unique(map: "docId_UNIQUE")
+  docId            Int                @id @unique(map: "docId_UNIQUE") @default(autoincrement())
   owner            Int
   contentLocation  String?            @db.VarChar(255)
   lastEdited       DateTime?          @db.DateTime(0)
+  name             String?            @db.VarChar(255)
   activityItems    activityItems[]
   documentVersions documentVersions[]
   users            users              @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_users")
@@ -109,7 +110,7 @@ model studentItemResponses {
 }
 
 model users {
-  userId                     Int                          @id
+  userId                     Int                          @id @default(autoincrement())
   email                      String                       @unique(map: "email_UNIQUE") @db.VarChar(45)
   activities                 activities[]
   assignments                assignments[]
