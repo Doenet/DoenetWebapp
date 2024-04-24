@@ -1,9 +1,13 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
+import { PrismaClient } from '@prisma/client'
 
 // To handle a GET request to /api
 export async function GET(request: NextApiRequest, params: {params: {uri: string} }) {
   // Do whatever you want
+
+  // TODO - is is heavy to construct this on each request?
+  const prisma = new PrismaClient()
 
   console.log(params);
   console.log(params.params.uri);
