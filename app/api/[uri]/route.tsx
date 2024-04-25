@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'
-import { createUser, findOrCreateUser } from "@/app/lib/doenet-data"
+import { createDocument, createUser, findOrCreateUser, listUserDocs } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -15,8 +15,20 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
   console.log(jwtSecretKey);
 
 
-  const loggedInEmail = cookies().get('email');
+  const loggedInEmail = cookies().get('email')?.value;
+  const loggedInUserId = Number(cookies().get('userId')?.value);
 
+  const apisRequiringLogin = [
+    "createPortfolioActivity.php",
+    "loadProfile.php"
+  ]
+
+  console.log(loggedInUserId);
+  console.log(loggedInEmail);
+
+  if (!loggedInUserId && apisRequiringLogin.find( (url) => url === params.params.uri)) {
+    return NextResponse.json({ message : "need to be logged in to do that"}, { status: 401 });
+  }
   //console.log(params);
   //console.log(params.params.uri);
   switch (params.params.uri) {
@@ -35,6 +47,12 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       cookies().set('userId', String(userId));
       return NextResponse.json({ success: true}, { status: 200 });
       break;
+    case "createPortfolioActivity.php":
+      const docId = await createDocument(loggedInUserId);
+      return NextResponse.json({ success: true,
+        docId
+      }, { status: 200 });
+      break;
     case "checkCredentials.php":
       const loggedIn = cookies().get('email') ? true : false;
       return NextResponse.json({ success: loggedIn }, { status: 200 });
@@ -46,7 +64,7 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     case "getPortfolio.php":
       return NextResponse.json({ 
         'success': true,
-        'publicActivities': [],
+        'publicActivities': await listUserDocs(loggedInUserId),
         'privateActivities': [],
         'fullName' : "stand-in name",
         'notMe' : false
