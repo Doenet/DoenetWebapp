@@ -3,16 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model activities {
   activityId    Int             @id @unique(map: "activityId_UNIQUE") @default(autoincrement())
   owner         Int
-  name          String?         @db.VarChar(255)
-  createdAt     DateTime?       @db.DateTime(0)
-  lastEdited    DateTime?       @db.DateTime(0)
+  name          String?         
+  createdAt     DateTime?       
+  lastEdited    DateTime?       
   users         users           @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_users1")
   activityItems activityItems[]
   assignments   assignments[]
@@ -61,8 +61,8 @@ model assignments {
 model documentVersions {
   version         Int
   docId           Int
-  cid             String?           @db.VarChar(255)
-  createdAt       DateTime?         @db.DateTime(0)
+  cid             String?           
+  createdAt       DateTime?         
   assignmentItems assignmentItems[]
   documents       documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documents_activities1")
 
@@ -73,9 +73,9 @@ model documentVersions {
 model documents {
   docId            Int                @id @unique(map: "docId_UNIQUE") @default(autoincrement())
   owner            Int
-  contentLocation  String?            @db.VarChar(255)
-  lastEdited       DateTime?          @db.DateTime(0)
-  name             String?            @db.VarChar(255)
+  contentLocation  String?            
+  lastEdited       DateTime?          
+  name             String?            
   activityItems    activityItems[]
   documentVersions documentVersions[]
   users            users              @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_users")
@@ -86,7 +86,7 @@ model documents {
 model studentAssignmentResponses {
   assignmentId Int
   userId       Int
-  score        Float?      @db.Float
+  score        Float?
   assignments  assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_users_assignments1")
   users        users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_users_users1")
 
@@ -100,7 +100,7 @@ model studentItemResponses {
   docVersion      Int
   docId           Int
   userId          Int
-  response        String?         @db.VarChar(255)
+  response        String?         
   assignmentItems assignmentItems @relation(fields: [assignmentId, docVersion, docId], references: [assignmentId, docVersion, docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_assignmentItems1")
   users           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_users1")
 
