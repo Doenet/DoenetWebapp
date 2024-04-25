@@ -1,6 +1,8 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'
+import { createUser } from "@/app/lib/doenet-data"
+import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
 export async function GET(request: NextApiRequest, params: {params: {uri: string} }) {
@@ -9,12 +11,58 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
   // TODO - is is heavy to construct this on each request?
   const prisma = new PrismaClient()
 
-  console.log(params);
-  console.log(params.params.uri);
+  const jwtSecretKey = process.env.JWT_SECRET
+  console.log(jwtSecretKey);
+
+
+  const loggedInEmail = cookies().get('email');
+
+  //console.log(params);
+  //console.log(params.params.uri);
   switch (params.params.uri) {
+    case "getQuickCheckSignedIn.php":
+      const signedIn = cookies().get("email") ? true : false;
+      return NextResponse.json({ signedIn: signedIn }, { status: 200 });
+      break;
+    // TODO change this, it puts PII, i.e. emails in the URL, which is best to avoid
+    // URLs get logged to server logs, which we should try to keep PII out of
+    case "sendSignInEmail.php":
+      // TODO - look into why typescript doesn't like this
+      const email = request.nextUrl.searchParams.get("emailaddress");
+      createUser(email);
+      cookies().set('email', email);
+      return NextResponse.json({ success: true}, { status: 200 });
+      break;
+    case "checkCredentials.php":
+      const loggedIn = cookies().get('email') ? true : false;
+      return NextResponse.json({ success: loggedIn }, { status: 200 });
+    case "getCoursePermissionsAndSettings.php":
+      return NextResponse.json({ }, { status: 400 });
     case "loadPromotedContent.php":
       return NextResponse.json({ message: params.params.uri }, { status: 200 });
       break;
+    case "getPortfolio.php":
+      return NextResponse.json({ 
+        'success': true,
+        'publicActivities': [],
+        'privateActivities': [],
+        'fullName' : "stand-in name",
+        'notMe' : false
+      }, { status: 200 });
+      break;
+    case "loadProfile.php":
+      return NextResponse.json({ 
+        'profile' : {
+          'screenName' :'',
+          'email' : loggedInEmail,
+          'firstName' :'',
+          'lastName' :'',
+          'profilePicture' : 'anonymous',
+          'trackingConsent' : true,
+          'signedIn' : '0',
+          'userId' : '',
+          'canUpload' : '0'
+      }}, { status: 200 });
     case "hello":
       return NextResponse.json({ message: "Hello World" }, { status: 200 });
     default:
