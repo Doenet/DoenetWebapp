@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'
-import { createUser } from "@/app/lib/doenet-data"
+import { createUser, findOrCreateUser } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -27,10 +27,12 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     // TODO change this, it puts PII, i.e. emails in the URL, which is best to avoid
     // URLs get logged to server logs, which we should try to keep PII out of
     case "sendSignInEmail.php":
-      // TODO - look into why typescript doesn't like this
+      // TODO - look into why typescript doesn't like nextUrl, because it works anyway 
       const email = request.nextUrl.searchParams.get("emailaddress");
-      createUser(email);
+      //createUser(email);
+      const userId = await findOrCreateUser(email);
       cookies().set('email', email);
+      cookies().set('userId', String(userId));
       return NextResponse.json({ success: true}, { status: 200 });
       break;
     case "checkCredentials.php":

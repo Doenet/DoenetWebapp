@@ -13,8 +13,22 @@ import { PrismaClient } from '@prisma/client'
 
 import { unstable_noStore as noStore } from 'next/cache';
 
+
+export async function findOrCreateUser(email: string) {
+  const prisma = new PrismaClient()
+
+  const user = await prisma.users.findUnique({where : { email } });
+  if (user) {
+    console.log(user);
+    return user.userId;
+  } else {
+    return createUser(email);
+  }
+}
+
 export async function createUser(email: string) {
 
   const prisma = new PrismaClient()
-  await prisma.users.create({ data: { email }})
+  const result = await prisma.users.create({ data: { email }})
+  return result.userId;
 }
