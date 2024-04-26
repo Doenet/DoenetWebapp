@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { documents, PrismaClient } from '@prisma/client'
-import { createDocument, createUser, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc } from "@/app/lib/doenet-data"
+import { createDocument, createUser, deleteDocument, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -44,6 +44,14 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       cookies().set('email', email);
       cookies().set('userId', String(userId));
       return NextResponse.json({ success: true}, { status: 200 });
+    case "deletePortfolioActivity.php": {
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      console.log("delete", doenetId);
+      const docId = await deleteDocument(doenetId);
+      return NextResponse.json({ success: true,
+        docId
+      }, { status: 200 });
+    }
     case "createPortfolioActivity.php":
       const docId = await createDocument(loggedInUserId);
       return NextResponse.json({ success: true,

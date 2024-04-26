@@ -15,6 +15,10 @@ export async function createDocument(owner: number) {
   return result.docId;
 }
 
+export async function deleteDocument(docId: number) {
+  return await prisma.documents.update({where : { docId }, data : {isDeleted: true}});
+}
+
 // TODO - access control
 export async function saveDoc({docId, content, name, imagePath, isPublic}: 
   { docId: number, content?: string, name?: string, isPublic?: boolean, imagePath?: string}) {
@@ -23,7 +27,7 @@ export async function saveDoc({docId, content, name, imagePath, isPublic}:
 
 // TODO - access control
 export async function getDoc(docId: number) {
-  return await prisma.documents.findFirstOrThrow({where : { docId } });
+  return await prisma.documents.findFirstOrThrow({where : { docId, OR: [ {isDeleted: false}, {isDeleted: null}]} });
 }
 
 // TODO - access control
@@ -47,7 +51,7 @@ export async function getDocEditorData(docId: number) {
 }
 
 export async function listUserDocs(owner: number) {
-  let ret = await prisma.documents.findMany({where : { owner } });
+  let ret = await prisma.documents.findMany({where : { owner, OR: [ {isDeleted: false}, {isDeleted: null}]} });
   // TODO - delete, just massaging to make old client happy
   let massaged = ret.map((doc) => {
     return {...doc, doenetId: doc.docId,

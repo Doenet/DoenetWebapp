@@ -77,6 +77,7 @@ model documents {
   lastEdited       DateTime?          
   name             String?            
   isPublic         Boolean?
+  isDeleted        Boolean?
   imagePath        String?
   activityItems    activityItems[]
   documentVersions documentVersions[]
