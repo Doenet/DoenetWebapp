@@ -76,6 +76,8 @@ model documents {
   contentLocation  String?            
   lastEdited       DateTime?          
   name             String?            
+  isPublic         Boolean?
+  imagePath        String?
   activityItems    activityItems[]
   documentVersions documentVersions[]
   users            users              @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_users")

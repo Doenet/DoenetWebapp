@@ -1,6 +1,6 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client'
+import { documents, PrismaClient } from '@prisma/client'
 import { createDocument, createUser, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
@@ -54,6 +54,17 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       const label = request.nextUrl.searchParams.get("label");
       saveDoc({docId: doenetId, name: label});
     }
+    case "loadSupportingFileInfo.php": {
+      // TODO - finish this, just stubbing so I can open the editor drawer
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      return NextResponse.json({ 
+        success:true,
+        supportingFiles: [],
+        canUpload: true,
+        userQuotaBytesAvailable: 1000000,
+        quotaBytes: 9000000,
+      });
+    }
     case "checkCredentials.php":
       const loggedIn = cookies().get('email') ? true : false;
       return NextResponse.json({ success: loggedIn }, { status: 200 });
@@ -96,7 +107,7 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
 
 // To handle a POST request to /api
 export async function POST(request: NextApiRequest, params: {params: {uri: string} }) {
-  // Do whatever you want
+  const prisma = new PrismaClient()
 
   switch (params.params.uri) {
     case "saveDoenetML.php":
@@ -106,5 +117,17 @@ export async function POST(request: NextApiRequest, params: {params: {uri: strin
       const docId = Number(body.pageId);
       saveDoc({docId, content:doenetML});
       return NextResponse.json({ success:true}, { status: 200 });
+    case "updatePortfolioActivitySettings.php": {
+      const body = await request.json();
+
+      const docId = Number(body.doenetId);
+      const imagePath = body.imagePath;
+      const label = body.label;
+      // TODO - deal with learning outcomes
+      const learningOutcomes = body.learningOutcomes;
+      const isPublic = Boolean(body.public);
+      saveDoc({docId, imagePath, name:label, isPublic});
+      return NextResponse.json({ success:true}, { status: 200 });
+    }
   }
 }
