@@ -54,6 +54,11 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       const label = request.nextUrl.searchParams.get("label");
       saveDoc({docId: doenetId, name: label});
     }
+    case "updateIsPublicActivity.php": {
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      const isPublic = Boolean(request.nextUrl.searchParams.get("isPublic"));
+      saveDoc({docId: doenetId, isPublic});
+    }
     case "loadSupportingFileInfo.php": {
       // TODO - finish this, just stubbing so I can open the editor drawer
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
@@ -78,13 +83,8 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       console.log(doenetId);
       return NextResponse.json( editorData, { status: 200 });
     case "getPortfolio.php":
-      return NextResponse.json({ 
-        'success': true,
-        'publicActivities': await listUserDocs(loggedInUserId),
-        'privateActivities': [],
-        'fullName' : "stand-in name",
-        'notMe' : false
-      }, { status: 200 });
+      return NextResponse.json(
+        await listUserDocs(loggedInUserId), { status: 200 });
     case "loadProfile.php":
       return NextResponse.json({ 
         'profile' : {

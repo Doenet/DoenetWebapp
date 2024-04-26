@@ -1,14 +1,3 @@
-import { sql } from '@vercel/postgres';
-import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  User,
-  Revenue,
-} from './definitions';
-import { formatCurrency } from './utils';
 import { PrismaClient } from '@prisma/client'
 
 import { unstable_noStore as noStore } from 'next/cache';
@@ -26,15 +15,18 @@ export async function createDocument(owner: number) {
   return result.docId;
 }
 
+// TODO - access control
 export async function saveDoc({docId, content, name, imagePath, isPublic}: 
   { docId: number, content?: string, name?: string, isPublic?: boolean, imagePath?: string}) {
   return await prisma.documents.update({where : { docId }, data : {contentLocation: content, name, isPublic, imagePath}});
 }
 
+// TODO - access control
 export async function getDoc(docId: number) {
   return await prisma.documents.findFirstOrThrow({where : { docId } });
 }
 
+// TODO - access control
 export async function getDocEditorData(docId: number) {
   // TODO - delete, just massaging to make old client happy
   let doc = await prisma.documents.findFirstOrThrow({where : { docId } });
@@ -61,8 +53,16 @@ export async function listUserDocs(owner: number) {
     return {...doc, doenetId: doc.docId,
       label: doc.name, content: [doc.docId]}
   });
+  let publicDocs = massaged.filter((doc) => doc.isPublic)
+  let privateDocs = massaged.filter((doc) => !doc.isPublic)
   //console.log(ret);
-  return massaged;
+  return { 
+    success: true,
+    publicActivities: publicDocs,
+    privateActivities: privateDocs,
+    fullName : "stand-in name",
+    notMe : false
+  };
 }
 
 export async function findOrCreateUser(email: string) {
