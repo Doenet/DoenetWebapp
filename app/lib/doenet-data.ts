@@ -24,6 +24,12 @@ export async function createDocument(owner: number) {
   return result.docId;
 }
 
+export async function saveDoc(docId: number, content: string) {
+  const prisma = new PrismaClient()
+
+  return await prisma.documents.update({where : { docId }, data : {contentLocation: content}});
+}
+
 export async function getDoc(docId: number) {
   const prisma = new PrismaClient()
 
@@ -61,7 +67,7 @@ export async function listUserDocs(owner: number) {
     return {...doc, doenetId: doc.docId,
       label: doc.name, imagePath: '/activity_default.jpg', content: [doc.docId]}
   });
-  console.log(ret);
+  //console.log(ret);
   return massaged;
 }
 

@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'
-import { createDocument, createUser, findOrCreateUser, getDocEditorData, listUserDocs } from "@/app/lib/doenet-data"
+import { createDocument, createUser, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -95,7 +95,16 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
 }
 
 // To handle a POST request to /api
-export async function POST(request) {
+export async function POST(request: NextApiRequest, params: {params: {uri: string} }) {
   // Do whatever you want
-  return NextResponse.json({ message: "Hello World" }, { status: 200 });
+
+  switch (params.params.uri) {
+    case "saveDoenetML.php":
+      const body = await request.json();
+      //console.log(request);
+      const doenetML = body.doenetML;
+      const docId = Number(body.pageId);
+      saveDoc(docId, doenetML);
+      return NextResponse.json({ success:true}, { status: 200 });
+  }
 }
