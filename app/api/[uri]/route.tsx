@@ -34,7 +34,6 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     case "getQuickCheckSignedIn.php":
       const signedIn = cookies().get("email") ? true : false;
       return NextResponse.json({ signedIn: signedIn }, { status: 200 });
-      break;
     // TODO change this, it puts PII, i.e. emails in the URL, which is best to avoid
     // URLs get logged to server logs, which we should try to keep PII out of
     case "sendSignInEmail.php":
@@ -45,13 +44,16 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       cookies().set('email', email);
       cookies().set('userId', String(userId));
       return NextResponse.json({ success: true}, { status: 200 });
-      break;
     case "createPortfolioActivity.php":
       const docId = await createDocument(loggedInUserId);
       return NextResponse.json({ success: true,
         docId
       }, { status: 200 });
-      break;
+    case "updatePortfolioActivityLabel.php": {
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      const label = request.nextUrl.searchParams.get("label");
+      saveDoc({docId: doenetId, name: label});
+    }
     case "checkCredentials.php":
       const loggedIn = cookies().get('email') ? true : false;
       return NextResponse.json({ success: loggedIn }, { status: 200 });
@@ -59,7 +61,6 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       return NextResponse.json({ }, { status: 400 });
     case "loadPromotedContent.php":
       return NextResponse.json({ message: params.params.uri }, { status: 200 });
-      break;
     case "getPortfolioEditorData.php":
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const editorData = await getDocEditorData(doenetId);
@@ -73,7 +74,6 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
         'fullName' : "stand-in name",
         'notMe' : false
       }, { status: 200 });
-      break;
     case "loadProfile.php":
       return NextResponse.json({ 
         'profile' : {
@@ -104,7 +104,7 @@ export async function POST(request: NextApiRequest, params: {params: {uri: strin
       //console.log(request);
       const doenetML = body.doenetML;
       const docId = Number(body.pageId);
-      saveDoc(docId, doenetML);
+      saveDoc({docId, content:doenetML});
       return NextResponse.json({ success:true}, { status: 200 });
   }
 }

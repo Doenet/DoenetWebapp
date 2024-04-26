@@ -24,10 +24,10 @@ export async function createDocument(owner: number) {
   return result.docId;
 }
 
-export async function saveDoc(docId: number, content: string) {
+export async function saveDoc({docId, content, name} : { docId: number, content?: string, name?: string}) {
   const prisma = new PrismaClient()
 
-  return await prisma.documents.update({where : { docId }, data : {contentLocation: content}});
+  return await prisma.documents.update({where : { docId }, data : {contentLocation: content, name}});
 }
 
 export async function getDoc(docId: number) {
