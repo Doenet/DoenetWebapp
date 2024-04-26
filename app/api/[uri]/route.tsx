@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { PrismaClient } from '@prisma/client'
-import { createDocument, createUser, findOrCreateUser, listUserDocs } from "@/app/lib/doenet-data"
+import { createDocument, createUser, findOrCreateUser, getDocEditorData, listUserDocs } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -12,8 +12,7 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
   const prisma = new PrismaClient()
 
   const jwtSecretKey = process.env.JWT_SECRET
-  console.log(jwtSecretKey);
-
+  //console.log(jwtSecretKey);
 
   const loggedInEmail = cookies().get('email')?.value;
   const loggedInUserId = Number(cookies().get('userId')?.value);
@@ -23,8 +22,8 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     "loadProfile.php"
   ]
 
-  console.log(loggedInUserId);
-  console.log(loggedInEmail);
+  //console.log(loggedInUserId);
+  //console.log(loggedInEmail);
 
   if (!loggedInUserId && apisRequiringLogin.find( (url) => url === params.params.uri)) {
     return NextResponse.json({ message : "need to be logged in to do that"}, { status: 401 });
@@ -61,6 +60,11 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     case "loadPromotedContent.php":
       return NextResponse.json({ message: params.params.uri }, { status: 200 });
       break;
+    case "getPortfolioEditorData.php":
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      const editorData = await getDocEditorData(doenetId);
+      console.log(doenetId);
+      return NextResponse.json( editorData, { status: 200 });
     case "getPortfolio.php":
       return NextResponse.json({ 
         'success': true,
