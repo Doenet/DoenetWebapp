@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { documents, PrismaClient } from '@prisma/client'
-import { createDocument, createUser, deleteDocument, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc } from "@/app/lib/doenet-data"
+import { createDocument, createUser, deleteDocument, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc, searchPublicDocs } from "@/app/lib/doenet-data"
 import { cookies } from 'next/headers'
 
 // To handle a GET request to /api
@@ -19,7 +19,10 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
 
   const apisRequiringLogin = [
     "createPortfolioActivity.php",
-    "loadProfile.php"
+    "loadProfile.php",
+    "deletePortfolioActivity.php",
+    "updatePortfolioActivityLabel.php",
+    "updateIsPublicActivity.php",
   ]
 
   //console.log(loggedInUserId);
@@ -55,17 +58,21 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     case "createPortfolioActivity.php":
       const docId = await createDocument(loggedInUserId);
       return NextResponse.json({ success: true,
-        docId
+        docId,
+        doenetId: docId,
+        pageDoenetId: docId,
       }, { status: 200 });
     case "updatePortfolioActivityLabel.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const label = request.nextUrl.searchParams.get("label");
       saveDoc({docId: doenetId, name: label});
+      return NextResponse.json({ success: true}, { status: 200 });
     }
     case "updateIsPublicActivity.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const isPublic = Boolean(request.nextUrl.searchParams.get("isPublic"));
       saveDoc({docId: doenetId, isPublic});
+      return NextResponse.json({ success: true}, { status: 200 });
     }
     case "loadSupportingFileInfo.php": {
       // TODO - finish this, just stubbing so I can open the editor drawer
@@ -76,15 +83,27 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
         canUpload: true,
         userQuotaBytesAvailable: 1000000,
         quotaBytes: 9000000,
-      });
+      }, { status: 200 });
     }
     case "checkCredentials.php":
       const loggedIn = cookies().get('email') ? true : false;
       return NextResponse.json({ success: loggedIn }, { status: 200 });
     case "getCoursePermissionsAndSettings.php":
       return NextResponse.json({ }, { status: 400 });
+    case "searchPublicActivities.php":
+      const query = request.nextUrl.searchParams.get("q");
+      return NextResponse.json({ 
+        success:true,
+        searchResults: {
+          users: [],// TODO - this
+          activities: await searchPublicDocs(query)
+        }
+      }, { status: 200 });
     case "loadPromotedContent.php":
-      return NextResponse.json({ message: params.params.uri }, { status: 200 });
+      return NextResponse.json({ 
+        success: true,
+        carouselData: {}
+        }, { status: 200 });
     case "getPortfolioEditorData.php":
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const editorData = await getDocEditorData(doenetId);
@@ -106,6 +125,8 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
           'userId' : '',
           'canUpload' : '0'
       }}, { status: 200 });
+    case "checkForCommunityAdmin.php":
+      return NextResponse.json({ isAdmin: true }, { status: 200 });
     case "hello":
       return NextResponse.json({ message: "Hello World" }, { status: 200 });
     default:

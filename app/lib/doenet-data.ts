@@ -8,7 +8,7 @@ export async function createDocument(owner: number) {
 
   const result = await prisma.documents.create({ data: { 
     owner,
-    contentLocation: "Hello there",
+    contentLocation: "",
     name: "untitled doc",
     imagePath: '/activity_default.jpg',
   }})
@@ -48,6 +48,18 @@ export async function getDocEditorData(docId: number) {
     },
     courseId: null
   };
+}
+
+export async function searchPublicDocs(query: string) {
+  let ret = await prisma.documents.findMany(
+    {where : { name: { contains: "%" + query + "%"}, 
+      isPublic: true,
+      OR: [ {isDeleted: false}, {isDeleted: null}]} });
+  let massaged = ret.map((doc) => {
+    return {...doc, firstName: "standin", lastName: "Name", type:"activity", course: doc.docId, doenetId: doc.docId,
+      label: doc.name, content: [doc.docId]}
+  });
+  return massaged;
 }
 
 export async function listUserDocs(owner: number) {
