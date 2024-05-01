@@ -24,7 +24,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
+// import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
@@ -34,7 +34,7 @@ import axios from "axios";
 
 export async function loader() {
   //Check if signedIn
-  const profileInfo = await checkIfUserClearedOut();
+  const profileInfo = undefined; //await checkIfUserClearedOut();
   let signedIn = true;
   if (profileInfo.cookieRemoved) {
     signedIn = false;
