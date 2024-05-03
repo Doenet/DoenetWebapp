@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Box, Link, Show } from "@chakra-ui/react";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "@/app/lib/react-router";
 
 const HPVideo = styled.video`
   width: 1200px;
@@ -17,6 +18,8 @@ const HPVideo = styled.video`
 `;
 
 export default function HomeIntroVideo() {
+  let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
+    useLoaderData();
   const videoEl = useRef(null);
 
   const attemptPlay = () => {

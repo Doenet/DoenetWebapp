@@ -1,11 +1,11 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { useLoaderData, useOutletContext } from "@/app/lib/react-router-dom"
+import { Outlet, useOutletContext, useLoaderData, useLocation, useNavigate } from "@/app/lib/react-router";
 // import { DoenetML } from "../../../Viewer/DoenetML";
 // import {
 //   pageVariantInfoAtom,
 //   pageVariantPanelAtom,
 // } from "../../../_sharedRecoil/PageViewerRecoil";
-import { useRecoilState, useSetRecoilState } from "recoil";
+// import { useRecoilState, useSetRecoilState } from "recoil";
 // import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import {
   Box,
@@ -27,9 +27,9 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import { MdBuild } from "react-icons/md";
-import axios from "axios";
-import { useFetcher } from "react-router-dom";
+// import { MdBuild } from "react-icons/md";
+// import axios from "axios";
+// import { useFetcher } from "react-router-dom";
 
 // export async function action() {
 //   //Create a portfolio activity and redirect to the editor for it
@@ -107,6 +107,8 @@ let doenetML = `
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
+
+  console.log("Render Home");
 
   const favorites = loaderData?.carouselData?.Homepage;
 

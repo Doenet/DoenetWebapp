@@ -15,7 +15,7 @@ import {
   RouterProvider,
 } from "@/app/lib/react-router-dom"
 import { RecoilRoot } from "recoil";
-import { createRoot } from "react-dom/client";
+//import { createRoot } from "react-dom/client";
 
 // import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
