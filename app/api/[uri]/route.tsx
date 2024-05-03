@@ -70,7 +70,13 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     }
     case "updateIsPublicActivity.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
-      const isPublic = Boolean(request.nextUrl.searchParams.get("isPublic"));
+      // figure out a definite strategy for representing booleans and transmitting them
+
+      const isPublicRaw = request.nextUrl.searchParams.get("isPublic");
+      let isPublic = false;
+      if (isPublicRaw === 1) {
+        isPublic = true;
+      }
       saveDoc({docId: doenetId, isPublic});
       return NextResponse.json({ success: true}, { status: 200 });
     }
