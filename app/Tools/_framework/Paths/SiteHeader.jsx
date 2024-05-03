@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import {
-  Box,
+  Button,
   Center,
   Flex,
   Grid,
@@ -22,11 +22,11 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import { Outlet, useLoaderData, useLocation, useNavigate } from "@/app/lib/react-router";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
-// import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-// import RouterLogo from "../RouterLogo";
-// import { pageToolViewAtom } from "../NewToolRoot";
+import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
+import RouterLogo from "../RouterLogo";
+import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -34,7 +34,7 @@ import axios from "axios";
 
 export async function loader() {
   //Check if signedIn
-  const profileInfo = undefined; //await checkIfUserClearedOut();
+  const profileInfo = await checkIfUserClearedOut();
   let signedIn = true;
   if (profileInfo.cookieRemoved) {
     signedIn = false;
@@ -103,231 +103,221 @@ function NavLinkTab({ to, children, dataTest }) {
 export function SiteHeader(props) {
   let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
     useLoaderData();
+  const { childComponent } = props;
+
+  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
+  let location = useLocation();
+
+  // const navColor = useColorModeValue("#ffffff", "gray.800");
+  const navigate = useNavigate();
+
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef("");
+
+  if (navigateTo.current != "") {
+    const newHref = navigateTo.current;
+    navigateTo.current = "";
+    location.href = newHref;
+    navigate(newHref);
+  }
+
   return (
-    <Box>
-<Outlet context={{ signedIn }} />
-    </Box>
-  )
+    <>
+      <Grid
+        templateAreas={`"siteHeader" 
+        "main"`}
+        gridTemplateRows="40px auto"
+        width="100vw"
+        height="100vh"
+      >
+        <GridItem
+          area="siteHeader"
+          as="header"
+          width="100vw"
+          m="0"
+          backgroundColor="#fff"
+          color="#000"
+          height="40px"
+        >
+          <Grid
+            height="40px"
+            position="fixed"
+            top="0"
+            zIndex="1200"
+            borderBottom="1px solid var(--mainGray)"
+            // paddingBottom="2px"
+            width="100%"
+            margin="0"
+            display="flex"
+            justifyContent="space-between"
+            templateAreas={`"leftHeader menus rightHeader" 
+        "main"`}
+            gridTemplateColumns="1f auto 1f"
+          >
+            <GridItem area="leftHeader">
+              <Center h="100%">
+                {/* <Button display={{ base: "flex", md: "none" }}>
+                  TABS HERE
+                </Button> */}
+                <RouterLogo />
+              </Center>
+            </GridItem>
+            <GridItem area="menus">
+              <HStack spacing={8}>
+                <NavLinkTab to="/" dataTest="Home">
+                  Home
+                </NavLinkTab>
+                <NavLinkTab to="library" dataTest="Library">
+                  Library
+                </NavLinkTab>
+                <NavLinkTab to="community" dataTest="Community">
+                  Community
+                </NavLinkTab>
+                {signedIn && (
+                  <>
+                    <NavLinkTab
+                      to={`portfolio/${portfolioCourseId}`}
+                      dataTest="Portfolio"
+                    >
+                      Portfolio
+                    </NavLinkTab>
+                    <NavLinkTab to="courses" dataTest="My Courses">
+                      My Courses
+                    </NavLinkTab>
+                    {isAdmin && (
+                      <NavLinkTab to="admin" dataTest="Admin">
+                        Admin
+                      </NavLinkTab>
+                    )}
+                  </>
+                )}
+              </HStack>
+            </GridItem>
+            <GridItem area="rightHeader">
+              <Flex columnGap="10px">
+                <Link
+                  borderRadius="lg"
+                  p="4px 5px 0px 5px"
+                  mt="4px"
+                  h="32px"
+                  bg="#EDF2F7"
+                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                  isExternal
+                  data-test="Documentation Link"
+                >
+                  Documentation <ExternalLinkIcon mx="2px" />
+                </Link>
+                <Link href="mailto:info@doenet.org">
+                  <Tooltip label="mailto:info@doenet.org">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<HiOutlineMail />}
+                    />
+                  </Tooltip>
+                </Link>
+
+                <Link href="https://github.com/Doenet/">
+                  <Tooltip label="Doenet Github">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<BsGithub />}
+                    />
+                  </Tooltip>
+                </Link>
+                <Link href="https://discord.gg/PUduwtKJ5h">
+                  <Tooltip label="Doenet Discord">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<BsDiscord />}
+                    />
+                  </Tooltip>
+                </Link>
+                {signedIn ? (
+                  <Center h="40px" mr="10px">
+                    <Menu>
+                      <MenuButton>
+                        <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                      </MenuButton>
+                      <MenuList>
+                        <VStack mb="20px">
+                          <Avatar size="xl" name={`${firstName} ${lastName}`} />
+                          <Text>
+                            {firstName} {lastName}
+                          </Text>
+                          <Text>{email}</Text>
+                          <ButtonGroup size="sm" isAttached variant="outline">
+                            <Button
+                              leftIcon={<FaSun />}
+                              onClick={toggleColorMode}
+                              isDisabled={colorMode == "light"}
+                            >
+                              Light
+                            </Button>
+                            <Button
+                              leftIcon={<FaMoon />}
+                              onClick={toggleColorMode}
+                              isDisabled={colorMode == "dark"}
+                              // cursor="not-allowed"
+                            >
+                              Dark
+                            </Button>
+                            {/* <Button
+                            leftIcon={<FaRobot />}
+                            onClick={() => setColorMode("system")}
+                            // isDisabled={colorMode == ""}
+                            // cursor="not-allowed"
+                          >
+                            Auto
+                          </Button> */}
+                          </ButtonGroup>
+                        </VStack>
+                        <MenuItem as="a" href="/signout">
+                          Sign Out
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Center>
+                ) : (
+                  <Center h="40px" mr="10px">
+                    <Button
+                      data-test="Nav to signin"
+                      size="sm"
+                      // variant="ghost"
+                      variant="outline"
+                      onClick={() => {
+                        navigateTo.current = "/signin";
+                        setRecoilPageToolView({
+                          page: "signin",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                  </Center>
+                )}
+              </Flex>
+            </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem area="main" as="main" margin="0" overflowY="scroll">
+          {/* <Box>test</Box> */}
+          {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
+        </GridItem>
+      </Grid>
+    </>
+  );
 }
-
-// export function SiteHeader(props) {
-//   let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
-//     useLoaderData();
-//   const { childComponent } = props;
-
-//   const { colorMode, toggleColorMode, setColorMode } = useColorMode();
-//   let location = useLocation();
-
-//   // const navColor = useColorModeValue("#ffffff", "gray.800");
-//   const navigate = useNavigate();
-
-//   const [recoilPageToolView, setRecoilPageToolView] =
-//     useRecoilState(pageToolViewAtom);
-
-//   let navigateTo = useRef("");
-
-//   if (navigateTo.current != "") {
-//     const newHref = navigateTo.current;
-//     navigateTo.current = "";
-//     location.href = newHref;
-//     navigate(newHref);
-//   }
-
-//   return (
-//     <>
-//       <Grid
-//         templateAreas={`"siteHeader" 
-//         "main"`}
-//         gridTemplateRows="40px auto"
-//         width="100vw"
-//         height="100vh"
-//       >
-//         <GridItem
-//           area="siteHeader"
-//           as="header"
-//           width="100vw"
-//           m="0"
-//           backgroundColor="#fff"
-//           color="#000"
-//           height="40px"
-//         >
-//           <Grid
-//             height="40px"
-//             position="fixed"
-//             top="0"
-//             zIndex="1200"
-//             borderBottom="1px solid var(--mainGray)"
-//             // paddingBottom="2px"
-//             width="100%"
-//             margin="0"
-//             display="flex"
-//             justifyContent="space-between"
-//             templateAreas={`"leftHeader menus rightHeader" 
-//         "main"`}
-//             gridTemplateColumns="1f auto 1f"
-//           >
-//             <GridItem area="leftHeader">
-//               <Center h="100%">
-//                 {/* <Button display={{ base: "flex", md: "none" }}>
-//                   TABS HERE
-//                 </Button> */}
-//                 <RouterLogo />
-//               </Center>
-//             </GridItem>
-//             <GridItem area="menus">
-//               <HStack spacing={8}>
-//                 <NavLinkTab to="/" dataTest="Home">
-//                   Home
-//                 </NavLinkTab>
-//                 <NavLinkTab to="library" dataTest="Library">
-//                   Library
-//                 </NavLinkTab>
-//                 <NavLinkTab to="community" dataTest="Community">
-//                   Community
-//                 </NavLinkTab>
-//                 {signedIn && (
-//                   <>
-//                     <NavLinkTab
-//                       to={`portfolio/${portfolioCourseId}`}
-//                       dataTest="Portfolio"
-//                     >
-//                       Portfolio
-//                     </NavLinkTab>
-//                     <NavLinkTab to="courses" dataTest="My Courses">
-//                       My Courses
-//                     </NavLinkTab>
-//                     {isAdmin && (
-//                       <NavLinkTab to="admin" dataTest="Admin">
-//                         Admin
-//                       </NavLinkTab>
-//                     )}
-//                   </>
-//                 )}
-//               </HStack>
-//             </GridItem>
-//             <GridItem area="rightHeader">
-//               <Flex columnGap="10px">
-//                 <Link
-//                   borderRadius="lg"
-//                   p="4px 5px 0px 5px"
-//                   mt="4px"
-//                   h="32px"
-//                   bg="#EDF2F7"
-//                   href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
-//                   isExternal
-//                   data-test="Documentation Link"
-//                 >
-//                   Documentation <ExternalLinkIcon mx="2px" />
-//                 </Link>
-//                 <Link href="mailto:info@doenet.org">
-//                   <Tooltip label="mailto:info@doenet.org">
-//                     <IconButton
-//                       mt="5px"
-//                       colorScheme="blue"
-//                       size="sm"
-//                       fontSize="16pt"
-//                       icon={<HiOutlineMail />}
-//                     />
-//                   </Tooltip>
-//                 </Link>
-
-//                 <Link href="https://github.com/Doenet/">
-//                   <Tooltip label="Doenet Github">
-//                     <IconButton
-//                       mt="5px"
-//                       colorScheme="blue"
-//                       size="sm"
-//                       fontSize="16pt"
-//                       icon={<BsGithub />}
-//                     />
-//                   </Tooltip>
-//                 </Link>
-//                 <Link href="https://discord.gg/PUduwtKJ5h">
-//                   <Tooltip label="Doenet Discord">
-//                     <IconButton
-//                       mt="5px"
-//                       colorScheme="blue"
-//                       size="sm"
-//                       fontSize="16pt"
-//                       icon={<BsDiscord />}
-//                     />
-//                   </Tooltip>
-//                 </Link>
-//                 {signedIn ? (
-//                   <Center h="40px" mr="10px">
-//                     <Menu>
-//                       <MenuButton>
-//                         <Avatar size="sm" name={`${firstName} ${lastName}`} />
-//                       </MenuButton>
-//                       <MenuList>
-//                         <VStack mb="20px">
-//                           <Avatar size="xl" name={`${firstName} ${lastName}`} />
-//                           <Text>
-//                             {firstName} {lastName}
-//                           </Text>
-//                           <Text>{email}</Text>
-//                           <ButtonGroup size="sm" isAttached variant="outline">
-//                             <Button
-//                               leftIcon={<FaSun />}
-//                               onClick={toggleColorMode}
-//                               isDisabled={colorMode == "light"}
-//                             >
-//                               Light
-//                             </Button>
-//                             <Button
-//                               leftIcon={<FaMoon />}
-//                               onClick={toggleColorMode}
-//                               isDisabled={colorMode == "dark"}
-//                               // cursor="not-allowed"
-//                             >
-//                               Dark
-//                             </Button>
-//                             {/* <Button
-//                             leftIcon={<FaRobot />}
-//                             onClick={() => setColorMode("system")}
-//                             // isDisabled={colorMode == ""}
-//                             // cursor="not-allowed"
-//                           >
-//                             Auto
-//                           </Button> */}
-//                           </ButtonGroup>
-//                         </VStack>
-//                         <MenuItem as="a" href="/signout">
-//                           Sign Out
-//                         </MenuItem>
-//                       </MenuList>
-//                     </Menu>
-//                   </Center>
-//                 ) : (
-//                   <Center h="40px" mr="10px">
-//                     <Button
-//                       data-test="Nav to signin"
-//                       size="sm"
-//                       // variant="ghost"
-//                       variant="outline"
-//                       onClick={() => {
-//                         navigateTo.current = "/signin";
-//                         setRecoilPageToolView({
-//                           page: "signin",
-//                           tool: "",
-//                           view: "",
-//                           params: {},
-//                         });
-//                       }}
-//                     >
-//                       Sign In
-//                     </Button>
-//                   </Center>
-//                 )}
-//               </Flex>
-//             </GridItem>
-//           </Grid>
-//         </GridItem>
-//         <GridItem area="main" as="main" margin="0" overflowY="scroll">
-//           {/* <Box>test</Box> */}
-//           {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
-//         </GridItem>
-//       </Grid>
-//     </>
-//   );
-// }

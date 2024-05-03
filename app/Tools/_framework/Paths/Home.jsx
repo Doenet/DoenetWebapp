@@ -1,12 +1,12 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { Outlet, useOutletContext, useLoaderData, useLocation, useNavigate } from "@/app/lib/react-router";
-// import { DoenetML } from "../../../Viewer/DoenetML";
-// import {
-//   pageVariantInfoAtom,
-//   pageVariantPanelAtom,
-// } from "../../../_sharedRecoil/PageViewerRecoil";
-// import { useRecoilState, useSetRecoilState } from "recoil";
-// import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
+import { useLoaderData, useOutletContext } from "react-router";
+import { DoenetML } from "../../../Viewer/DoenetML";
+import {
+  pageVariantInfoAtom,
+  pageVariantPanelAtom,
+} from "../../../_sharedRecoil/PageViewerRecoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import {
   Box,
   Center,
@@ -27,9 +27,9 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-// import { MdBuild } from "react-icons/md";
-// import axios from "axios";
-// import { useFetcher } from "react-router-dom";
+import { MdBuild } from "react-icons/md";
+import axios from "axios";
+import { useFetcher } from "react-router-dom";
 
 // export async function action() {
 //   //Create a portfolio activity and redirect to the editor for it
@@ -108,12 +108,10 @@ export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
 
-  console.log("Render Home");
-
   const favorites = loaderData?.carouselData?.Homepage;
 
-  // const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  // const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
   useEffect(() => {
     document.title = `Home - Doenet`;
@@ -441,7 +439,7 @@ export function Home() {
         bg={"white"}
         p="60px 10px"
       >
-        {/* <Carousel title="Doenet Team Favorites" data={favorites} /> */}
+        <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
 
       <Center w="100%" bg={blueColor} pl="10px" pr="10px">
@@ -513,7 +511,7 @@ export function Home() {
               width={["350px", "450px", "650px", "850px"]}
               overflow="clip"
             >
-              {/* <DoenetML
+              <DoenetML
                 key={`HPpageViewer`}
                 doenetML={doenetML}
                 flags={{
@@ -538,7 +536,7 @@ export function Home() {
                   viewURL: "/portfolioviewer",
                   editURL: "/publiceditor",
                 }}
-              /> */}
+              />
             </Flex>
           </Show>
         </VStack>
