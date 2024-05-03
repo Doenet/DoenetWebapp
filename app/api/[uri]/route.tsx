@@ -74,7 +74,7 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
 
       const isPublicRaw = request.nextUrl.searchParams.get("isPublic");
       let isPublic = false;
-      if (isPublicRaw === 1) {
+      if (isPublicRaw == 1) {
         isPublic = true;
       }
       saveDoc({docId: doenetId, isPublic});
