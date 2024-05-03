@@ -1,5 +1,5 @@
 import React from "react";
-import { useToast, toastType } from "@Toast";
+import { useToast, toastType } from "@/app/Tools/_framework/Toast" ;
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 

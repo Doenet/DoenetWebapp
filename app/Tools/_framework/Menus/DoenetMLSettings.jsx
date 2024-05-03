@@ -1,5 +1,5 @@
 import React from "react";
-import { useToast, toastType } from "@Toast";
+import { useToast, toastType } from "@/app/Tools/_framework/Toast" ;
 import { useRecoilValue } from "recoil";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

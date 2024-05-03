@@ -10,7 +10,7 @@ import {
 // import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
 import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
-import { useToast, toastType } from "@Toast";
+import { useToast, toastType } from "@/app/Tools/_framework/Toast" ;
 import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";

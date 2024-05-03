@@ -1,5 +1,5 @@
 import React from "react";
-import { useToast, toastType } from "@Toast";
+import { useToast, toastType } from "@/app/Tools/_framework/Toast" ;
 
 export default function ToastTest(props) {
   const toast = useToast();

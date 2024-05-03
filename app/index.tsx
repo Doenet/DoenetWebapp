@@ -1,106 +1,21 @@
 "use client";
 
-import AcmeLogo from '@/app/ui/acme-logo';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-
-import styles from '@/app/ui/home.module.css';
-import { lusitana } from '@/app/ui/fonts';
-import Image from 'next/image';
 import React from "react";
 
 import {
   createBrowserRouter,
   redirect,
   RouterProvider,
-} from "@/app/lib/react-router-dom"
+} from "react-router-dom";
 import { RecoilRoot } from "recoil";
-//import { createRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
-// import ToolRoot from "./Tools/_framework/NewToolRoot";
+import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
 
-// TODO - export this out of the DoenetML package
 // import { mathjaxConfig } from "./Core/utils/math";
 
-// import {
-//   loader as communityLoader,
-//   action as communityAction,
-//   Community,
-// } from "./Tools/_framework/Paths/Community";
-// import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
-// import {
-//   loader as libraryLoader,
-//   Library,
-// } from "./Tools/_framework/Paths/Library";
-import {
-  loader as siteLoader,
-  // SiteHeader,
-} from "./Tools/_framework/Paths/SiteHeader";
-import {
-  loader as caroselLoader,
-  // action as homeAction,
-  Home,
-} from "./Tools/_framework/Paths/Home";
-
-// import {
-//   loader as portfolioLoader,
-//   action as portfolioAction,
-//   Portfolio,
-// } from "./Tools/_framework/Paths/Portfolio";
-// import {
-//   loader as courseLoader,
-//   action as courseAction,
-//   Courses,
-// } from "./Tools/_framework/Paths/Courses";
-// import {
-//   loader as publicPortfolioLoader,
-//   PublicPortfolio,
-// } from "./Tools/_framework/Paths/PublicPortfolio";
-// import {
-//   loader as portfolioActivityViewerLoader,
-//   action as portfolioActivityViewerAction,
-//   PortfolioActivityViewer,
-// } from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-// import {
-//   action as editorSupportPanelAction,
-//   loader as editorSupportPanelLoader,
-// } from "./Tools/_framework/Panels/NewSupportPanel";
-// import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
-
-// import "@fontsource/jost";
-// import {
-//   PortfolioActivityEditor,
-//   loader as portfolioEditorLoader,
-//   action as portfolioEditorAction,
-// } from "./Tools/_framework/Paths/PortfolioActivityEditor";
-// import {
-//   PublicEditor,
-//   loader as publicEditorLoader,
-// } from "./Tools/_framework/Paths/PublicEditor";
-// import {
-//   CourseActivityEditor,
-//   loader as courseActivityEditorLoader,
-//   action as courseActivityEditorAction,
-// } from "./Tools/_framework/Paths/CourseActivityEditor";
-// import {
-//   CourseData,
-//   loader as courseDataLoader,
-// } from "./Tools/_framework/Paths/CourseData";
-// import {
-//   SurveyResults,
-//   loader as surveyResultsLoader,
-// } from "./Tools/_framework/Paths/SurveyResults";
-// import {
-//   CourseLinkPageViewer,
-//   loader as courseLinkPageViewerLoader,
-// } from "./Tools/_framework/Paths/CourseLinkPageViewer";
-
-{
-  /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
-}
-
+// TODO - move this 
 export const mathjaxConfig = {
   showProcessingMessages: false,
   "fast-preview": {
@@ -137,6 +52,84 @@ export const mathjaxConfig = {
     displayMath: [["\\[", "\\]"]],
   },
 };
+
+import {
+  loader as communityLoader,
+  action as communityAction,
+  Community,
+} from "./Tools/_framework/Paths/Community";
+import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
+import {
+  loader as libraryLoader,
+  Library,
+} from "./Tools/_framework/Paths/Library";
+import {
+  loader as siteLoader,
+  SiteHeader,
+} from "./Tools/_framework/Paths/SiteHeader";
+import {
+  loader as caroselLoader,
+  // action as homeAction,
+  Home,
+} from "./Tools/_framework/Paths/Home";
+
+import {
+  loader as portfolioLoader,
+  action as portfolioAction,
+  Portfolio,
+} from "./Tools/_framework/Paths/Portfolio";
+import {
+  loader as courseLoader,
+  action as courseAction,
+  Courses,
+} from "./Tools/_framework/Paths/Courses";
+import {
+  loader as publicPortfolioLoader,
+  PublicPortfolio,
+} from "./Tools/_framework/Paths/PublicPortfolio";
+import {
+  loader as portfolioActivityViewerLoader,
+  action as portfolioActivityViewerAction,
+  PortfolioActivityViewer,
+} from "./Tools/_framework/Paths/PortfolioActivityViewer";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import {
+  action as editorSupportPanelAction,
+  loader as editorSupportPanelLoader,
+} from "./Tools/_framework/Panels/NewSupportPanel";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
+
+import "@fontsource/jost";
+import {
+  PortfolioActivityEditor,
+  loader as portfolioEditorLoader,
+  action as portfolioEditorAction,
+} from "./Tools/_framework/Paths/PortfolioActivityEditor";
+import {
+  PublicEditor,
+  loader as publicEditorLoader,
+} from "./Tools/_framework/Paths/PublicEditor";
+import {
+  CourseActivityEditor,
+  loader as courseActivityEditorLoader,
+  action as courseActivityEditorAction,
+} from "./Tools/_framework/Paths/CourseActivityEditor";
+import {
+  CourseData,
+  loader as courseDataLoader,
+} from "./Tools/_framework/Paths/CourseData";
+import {
+  SurveyResults,
+  loader as surveyResultsLoader,
+} from "./Tools/_framework/Paths/SurveyResults";
+import {
+  CourseLinkPageViewer,
+  loader as courseLinkPageViewerLoader,
+} from "./Tools/_framework/Paths/CourseLinkPageViewer";
+
+{
+  /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
+}
 
 const theme = extendTheme({
   fonts: {
@@ -191,11 +184,11 @@ const theme = extendTheme({
 const router = createBrowserRouter([
   {
     path: "/",
-    // loader: siteLoader,
+    loader: siteLoader,
     element: (
       <>
         <ChakraProvider theme={theme}>
-          {/* <SiteHeader /> */}
+          <SiteHeader />
         </ChakraProvider>
       </>
     ),
@@ -206,7 +199,7 @@ const router = createBrowserRouter([
         // action: homeAction,
         errorElement: (
           <ChakraProvider theme={theme}>
-            {/* <ErrorPage /> */}
+            <ErrorPage />
           </ChakraProvider>
         ),
         element: (
@@ -223,293 +216,293 @@ const router = createBrowserRouter([
           // </DarkmodeController>
         ),
       },
-      // {
-      //   path: "/library",
-      //   loader: libraryLoader,
-      //   // sharing an action with the community page is somewhat intentional
-      //   // as it shows cards and admins have the same actions that they can perform
-      //   // on cards as they can on the community page
-      //   // TODO - determine if this is an okay way to share functionality across
-      //   // pages or a bad idea
-      //   action: communityAction,
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <Library />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "community",
-      //   loader: communityLoader,
-      //   action: communityAction,
-      //   // action: communitySearchAction,
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <Community />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "admin",
-      //   loader: adminLoader,
-      //   // sharing an action with the community page is somewhat intentional
-      //   // as it shows cards and admins have the same actions that they can perform
-      //   // on cards as they can on the community page
-      //   // TODO - determine if this is an okay way to share functionality across
-      //   // pages or a bad idea
-      //   action: communityAction,
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <Admin />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "portfolio/:courseId",
-      //   loader: portfolioLoader,
-      //   action: portfolioAction,
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <Portfolio />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "courses",
-      //   loader: courseLoader,
-      //   action: courseAction,
-      //   errorElement: (
-      //     <ChakraProvider theme={theme}>
-      //       <ErrorPage />
-      //     </ChakraProvider>
-      //   ),
+      {
+        path: "/library",
+        loader: libraryLoader,
+        // sharing an action with the community page is somewhat intentional
+        // as it shows cards and admins have the same actions that they can perform
+        // on cards as they can on the community page
+        // TODO - determine if this is an okay way to share functionality across
+        // pages or a bad idea
+        action: communityAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Library />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "community",
+        loader: communityLoader,
+        action: communityAction,
+        // action: communitySearchAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Community />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "admin",
+        loader: adminLoader,
+        // sharing an action with the community page is somewhat intentional
+        // as it shows cards and admins have the same actions that they can perform
+        // on cards as they can on the community page
+        // TODO - determine if this is an okay way to share functionality across
+        // pages or a bad idea
+        action: communityAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Admin />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "portfolio/:courseId",
+        loader: portfolioLoader,
+        action: portfolioAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Portfolio />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "courses",
+        loader: courseLoader,
+        action: courseAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
 
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <Courses />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "publicportfolio/:courseId",
-      //   loader: publicPortfolioLoader,
-      //   errorElement: (
-      //     <ChakraProvider theme={theme}>
-      //       <ErrorPage />
-      //     </ChakraProvider>
-      //   ),
-      //   element: (
-      //     <ChakraProvider theme={theme}>
-      //       <PublicPortfolio />
-      //     </ChakraProvider>
-      //   ),
-      // },
-      // {
-      //   path: "portfolioviewer/:doenetId",
-      //   loader: portfolioActivityViewerLoader,
-      //   action: portfolioActivityViewerAction,
-      //   errorElement: (
-      //     <ChakraProvider theme={theme}>
-      //       <ErrorPage />
-      //     </ChakraProvider>
-      //   ),
-      //   element: (
-      //     // <DarkmodeController>
-      //     <MathJaxContext
-      //       version={2}
-      //       config={mathjaxConfig}
-      //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      //     >
-      //       <ChakraProvider theme={theme}>
-      //         <PortfolioActivityViewer />
-      //       </ChakraProvider>
-      //     </MathJaxContext>
-      //     // </DarkmodeController>
-      //   ),
-      // },
-      // {
-      //   path: "portfolioeditor/:doenetId",
-      //   loader: async ({ params }) => {
-      //     //This leaves a location in history
-      //     //this is because redirect creates a standard Response object and
-      //     //Response objects has no way to set replace: true
+        element: (
+          <ChakraProvider theme={theme}>
+            <Courses />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "publicportfolio/:courseId",
+        loader: publicPortfolioLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: (
+          <ChakraProvider theme={theme}>
+            <PublicPortfolio />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "portfolioviewer/:doenetId",
+        loader: portfolioActivityViewerLoader,
+        action: portfolioActivityViewerAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: (
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <PortfolioActivityViewer />
+            </ChakraProvider>
+          </MathJaxContext>
+          // </DarkmodeController>
+        ),
+      },
+      {
+        path: "portfolioeditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
 
-      //     //Redirect as an activity can have no pageids
-      //     return redirect(`/portfolioeditor/${params.doenetId}/_`);
-      //   },
-      //   element: <div>Loading...</div>,
-      // },
-      // {
-      //   path: "portfolioeditor/:doenetId/:pageId",
-      //   loader: portfolioEditorLoader,
-      //   action: portfolioEditorAction,
-      //   // errorElement: <div>Error!</div>,
-      //   element: (
-      //     <MathJaxContext
-      //       version={2}
-      //       config={mathjaxConfig}
-      //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      //     >
-      //       <PortfolioActivityEditor />
-      //       {/* <ToolRoot /> */}
-      //     </MathJaxContext>
-      //   ),
-      // },
-      // {
-      //   path: "publiceditor/:doenetId",
-      //   loader: async ({ params }) => {
-      //     //This leaves a location in history
-      //     //this is because redirect creates a standard Response object and
-      //     //Response objects has no way to set replace: true
+          //Redirect as an activity can have no pageids
+          return redirect(`/portfolioeditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: "portfolioeditor/:doenetId/:pageId",
+        loader: portfolioEditorLoader,
+        action: portfolioEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PortfolioActivityEditor />
+            {/* <ToolRoot /> */}
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "publiceditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
 
-      //     //Redirect as an activity can have no pageids
-      //     return redirect(`/publiceditor/${params.doenetId}/_`);
-      //   },
-      //   element: <div>Loading...</div>,
-      // },
-      // {
-      //   path: "publiceditor/:doenetId/:pageId",
-      //   loader: publicEditorLoader,
-      //   errorElement: (
-      //     <ChakraProvider theme={theme}>
-      //       <ErrorPage />
-      //     </ChakraProvider>
-      //   ),
-      //   element: (
-      //     <MathJaxContext
-      //       version={2}
-      //       config={mathjaxConfig}
-      //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      //     >
-      //       <PublicEditor />
-      //     </MathJaxContext>
-      //   ),
-      // },
+          //Redirect as an activity can have no pageids
+          return redirect(`/publiceditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: "publiceditor/:doenetId/:pageId",
+        loader: publicEditorLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PublicEditor />
+          </MathJaxContext>
+        ),
+      },
     ],
   },
-  // {
-  //   path: "public",
-  //   loader: editorSupportPanelLoader,
-  //   action: editorSupportPanelAction,
-  //   // errorElement: <div>Error!</div>,
-  //   element: (
-  //     <MathJaxContext
-  //       version={2}
-  //       config={mathjaxConfig}
-  //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-  //     >
-  //       <ToolRoot />
-  //     </MathJaxContext>
-  //   ),
-  // },
-  // {
-  //   path: "/courselinkpageviewer/:doenetId",
-  //   loader: courseLinkPageViewerLoader,
-  //   element: (
-  //     <MathJaxContext
-  //       version={2}
-  //       config={mathjaxConfig}
-  //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-  //     >
-  //       <ChakraProvider theme={theme}>
-  //         <CourseLinkPageViewer />
-  //       </ChakraProvider>
-  //     </MathJaxContext>
-  //   ),
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <ErrorPage />
-  //     </ChakraProvider>
-  //   ),
-  // },
-  // {
-  //   path: "/courseactivityeditor/:doenetId",
-  //   loader: async ({ params }) => {
-  //     //This leaves a location in history
-  //     //this is because redirect creates a standard Response object and
-  //     //Response objects has no way to set replace: true
+  {
+    path: "public",
+    loader: editorSupportPanelLoader,
+    action: editorSupportPanelAction,
+    // errorElement: <div>Error!</div>,
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
+    ),
+  },
+  {
+    path: "/courselinkpageviewer/:doenetId",
+    loader: courseLinkPageViewerLoader,
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ChakraProvider theme={theme}>
+          <CourseLinkPageViewer />
+        </ChakraProvider>
+      </MathJaxContext>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/courseactivityeditor/:doenetId",
+    loader: async ({ params }) => {
+      //This leaves a location in history
+      //this is because redirect creates a standard Response object and
+      //Response objects has no way to set replace: true
 
-  //     //Redirect as an activity can have no pageids
-  //     return redirect(`/courseactivityeditor/${params.doenetId}/_`);
-  //   },
-  //   element: <div>Loading...</div>,
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <ErrorPage />
-  //     </ChakraProvider>
-  //   ),
-  // },
-  // {
-  //   path: "/courseactivityeditor/:doenetId/:pageId",
-  //   loader: courseActivityEditorLoader,
-  //   action: courseActivityEditorAction,
-  //   element: (
-  //     <MathJaxContext
-  //       version={2}
-  //       config={mathjaxConfig}
-  //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-  //     >
-  //       <ChakraProvider theme={theme}>
-  //         <CourseActivityEditor />
-  //       </ChakraProvider>
-  //     </MathJaxContext>
-  //   ),
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <ErrorPage />
-  //     </ChakraProvider>
-  //   ),
-  // },
-  // {
-  //   path: "/coursedata/:courseId",
-  //   loader: courseDataLoader,
-  //   element: (
-  //     <ChakraProvider theme={theme}>
-  //       <CourseData />
-  //     </ChakraProvider>
-  //   ),
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <ErrorPage />
-  //     </ChakraProvider>
-  //   ),
-  // },
-  // {
-  //   path: "/surveyresults/:doenetId",
-  //   loader: surveyResultsLoader,
-  //   element: (
-  //     <ChakraProvider theme={theme}>
-  //       <SurveyResults />
-  //     </ChakraProvider>
-  //   ),
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <ErrorPage />
-  //     </ChakraProvider>
-  //   ),
-  // },
+      //Redirect as an activity can have no pageids
+      return redirect(`/courseactivityeditor/${params.doenetId}/_`);
+    },
+    element: <div>Loading...</div>,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/courseactivityeditor/:doenetId/:pageId",
+    loader: courseActivityEditorLoader,
+    action: courseActivityEditorAction,
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ChakraProvider theme={theme}>
+          <CourseActivityEditor />
+        </ChakraProvider>
+      </MathJaxContext>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/coursedata/:courseId",
+    loader: courseDataLoader,
+    element: (
+      <ChakraProvider theme={theme}>
+        <CourseData />
+      </ChakraProvider>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/surveyresults/:doenetId",
+    loader: surveyResultsLoader,
+    element: (
+      <ChakraProvider theme={theme}>
+        <SurveyResults />
+      </ChakraProvider>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
 
-  // {
-  //   path: "*",
-  //   element: (
-  //     <MathJaxContext
-  //       version={2}
-  //       config={mathjaxConfig}
-  //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-  //     >
-  //       <ToolRoot />
-  //     </MathJaxContext>
-  //   ),
-  //   // TODO - probably not a good idea long term, this is to populate the site header
-  //   // on the 404 page, but this results in extra network requests when loading
-  //   // ToolRoot content
-  //   loader: siteLoader,
-  //   errorElement: (
-  //     <ChakraProvider theme={theme}>
-  //       <SiteHeader childComponent={<ErrorPage />} />
-  //     </ChakraProvider>
-  //   ),
-  // },
+  {
+    path: "*",
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
+    ),
+    // TODO - probably not a good idea long term, this is to populate the site header
+    // on the 404 page, but this results in extra network requests when loading
+    // ToolRoot content
+    loader: siteLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <SiteHeader childComponent={<ErrorPage />} />
+      </ChakraProvider>
+    ),
+  },
 ]);
 
 export default function IndexPage() {
@@ -519,5 +512,5 @@ export default function IndexPage() {
 
     <RouterProvider router={router} />
   </RecoilRoot>
-  );
+)
 }

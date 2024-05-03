@@ -12,7 +12,7 @@ import {
   useCourse,
 } from "../../../_reactComponents/Course/CourseActions";
 import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
-import { useToast, toastType } from "@Toast";
+import { useToast, toastType } from "@/app/Tools/_framework/Toast" ;
 import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 
 export default function CutCopyPasteMenu() {
