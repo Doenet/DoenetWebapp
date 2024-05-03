@@ -95,8 +95,12 @@ export default class BaseComponent {
     this.componentType = type;
   }
 
-  get componentType() {
+  static get componentType() {
     return this.constructor.componentType;
+  }
+
+  static set componentType(type) {
+    this.constructor.componentType = type;
   }
 
   get componentOrAdaptedName() {

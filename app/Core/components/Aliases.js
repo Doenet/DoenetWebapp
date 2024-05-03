@@ -15,10 +15,12 @@ export class RightHandSide extends MathComponent {
   static rendererType = "math";
 }
 
+/*
 export class Description extends TextOrInline {
   static componentType = "description";
   static rendererType = undefined;
 }
+*/
 
 export class Else extends Template {
   static componentType = "else";

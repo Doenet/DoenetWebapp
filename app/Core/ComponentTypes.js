@@ -389,6 +389,7 @@ const componentTypeArray = [
 ];
 
 export function allComponentClasses() {
+  console.log(componentTypeArray);
   const componentClasses = {};
   const lowerCaseComponentTypes = new Set();
   for (let ct of componentTypeArray) {
@@ -399,6 +400,7 @@ export function allComponentClasses() {
       );
     }
     let lowerCaseType = newComponentType.toLowerCase();
+    console.log(lowerCaseComponentTypes);
     if (lowerCaseComponentTypes.has(lowerCaseType)) {
       throw Error(
         "component type " + newComponentType + " defined in two classes",
