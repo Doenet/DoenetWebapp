@@ -91,16 +91,8 @@ export default class BaseComponent {
     return this.componentType;
   }
 
-  static set rendererType(type) {
-    this.componentType = type;
-  }
-
-  static get componentType() {
+  get componentType() {
     return this.constructor.componentType;
-  }
-
-  static set componentType(type) {
-    this.constructor.componentType = type;
   }
 
   get componentOrAdaptedName() {
