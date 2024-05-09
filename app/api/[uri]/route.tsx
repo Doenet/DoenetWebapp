@@ -1,21 +1,34 @@
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
-import { documents, PrismaClient } from '@prisma/client'
-import { createDocument, createUser, deleteDocument, findOrCreateUser, getDocEditorData, listUserDocs, saveDoc, searchPublicDocs } from "@/app/lib/doenet-data"
-import { cookies } from 'next/headers'
+import { documents, PrismaClient } from "@prisma/client";
+import {
+  createDocument,
+  createUser,
+  deleteDocument,
+  findOrCreateUser,
+  getDocEditorData,
+  getDocViewerData,
+  listUserDocs,
+  saveDoc,
+  searchPublicDocs,
+} from "@/app/lib/doenet-data";
+import { cookies } from "next/headers";
 
 // To handle a GET request to /api
-export async function GET(request: NextApiRequest, params: {params: {uri: string} }) {
+export async function GET(
+  request: NextApiRequest,
+  params: { params: { uri: string } },
+) {
   // Do whatever you want
 
   // TODO - is is heavy to construct this on each request?
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
 
-  const jwtSecretKey = process.env.JWT_SECRET
+  const jwtSecretKey = process.env.JWT_SECRET;
   //console.log(jwtSecretKey);
 
-  const loggedInEmail = cookies().get('email')?.value;
-  const loggedInUserId = Number(cookies().get('userId')?.value);
+  const loggedInEmail = cookies().get("email")?.value;
+  const loggedInUserId = Number(cookies().get("userId")?.value);
 
   const apisRequiringLogin = [
     "createPortfolioActivity.php",
@@ -23,16 +36,22 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     "deletePortfolioActivity.php",
     "updatePortfolioActivityLabel.php",
     "updateIsPublicActivity.php",
-  ]
+  ];
 
   //console.log(loggedInUserId);
   //console.log(loggedInEmail);
 
-  if (!loggedInUserId && apisRequiringLogin.find( (url) => url === params.params.uri)) {
-    return NextResponse.json({ message : "need to be logged in to do that"}, { status: 401 });
+  if (
+    !loggedInUserId &&
+    apisRequiringLogin.find((url) => url === params.params.uri)
+  ) {
+    return NextResponse.json(
+      { message: "need to be logged in to do that" },
+      { status: 401 },
+    );
   }
-  //console.log(params);
-  //console.log(params.params.uri);
+  // console.log(params);
+  // console.log(params.params.uri);
   switch (params.params.uri) {
     case "getQuickCheckSignedIn.php":
       const signedIn = cookies().get("email") ? true : false;
@@ -40,33 +59,30 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
     // TODO change this, it puts PII, i.e. emails in the URL, which is best to avoid
     // URLs get logged to server logs, which we should try to keep PII out of
     case "sendSignInEmail.php":
-      // TODO - look into why typescript doesn't like nextUrl, because it works anyway 
+      // TODO - look into why typescript doesn't like nextUrl, because it works anyway
       const email = request.nextUrl.searchParams.get("emailaddress");
       //createUser(email);
       const userId = await findOrCreateUser(email);
-      cookies().set('email', email);
-      cookies().set('userId', String(userId));
-      return NextResponse.json({ success: true}, { status: 200 });
+      cookies().set("email", email);
+      cookies().set("userId", String(userId));
+      return NextResponse.json({ success: true }, { status: 200 });
     case "deletePortfolioActivity.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
-      console.log("delete", doenetId);
+      // console.log("delete", doenetId);
       const docId = await deleteDocument(doenetId);
-      return NextResponse.json({ success: true,
-        docId
-      }, { status: 200 });
+      return NextResponse.json({ success: true, docId }, { status: 200 });
     }
     case "createPortfolioActivity.php":
       const docId = await createDocument(loggedInUserId);
-      return NextResponse.json({ success: true,
-        docId,
-        doenetId: docId,
-        pageDoenetId: docId,
-      }, { status: 200 });
+      return NextResponse.json(
+        { success: true, docId, doenetId: docId, pageDoenetId: docId },
+        { status: 200 },
+      );
     case "updatePortfolioActivityLabel.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const label = request.nextUrl.searchParams.get("label");
-      saveDoc({docId: doenetId, name: label});
-      return NextResponse.json({ success: true}, { status: 200 });
+      saveDoc({ docId: doenetId, name: label });
+      return NextResponse.json({ success: true }, { status: 200 });
     }
     case "updateIsPublicActivity.php": {
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
@@ -77,72 +93,97 @@ export async function GET(request: NextApiRequest, params: {params: {uri: string
       if (isPublicRaw == 1) {
         isPublic = true;
       }
-      saveDoc({docId: doenetId, isPublic});
-      return NextResponse.json({ success: true}, { status: 200 });
+      saveDoc({ docId: doenetId, isPublic });
+      return NextResponse.json({ success: true }, { status: 200 });
     }
     case "loadSupportingFileInfo.php": {
       // TODO - finish this, just stubbing so I can open the editor drawer
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
-      return NextResponse.json({ 
-        success:true,
-        supportingFiles: [],
-        canUpload: true,
-        userQuotaBytesAvailable: 1000000,
-        quotaBytes: 9000000,
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          success: true,
+          supportingFiles: [],
+          canUpload: true,
+          userQuotaBytesAvailable: 1000000,
+          quotaBytes: 9000000,
+        },
+        { status: 200 },
+      );
     }
     case "checkCredentials.php":
-      const loggedIn = cookies().get('email') ? true : false;
+      const loggedIn = cookies().get("email") ? true : false;
       return NextResponse.json({ success: loggedIn }, { status: 200 });
     case "getCoursePermissionsAndSettings.php":
-      return NextResponse.json({ }, { status: 400 });
+      return NextResponse.json({}, { status: 400 });
     case "searchPublicActivities.php":
       const query = request.nextUrl.searchParams.get("q");
-      return NextResponse.json({ 
-        success:true,
-        searchResults: {
-          users: [],// TODO - this
-          activities: await searchPublicDocs(query)
-        }
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          success: true,
+          searchResults: {
+            users: [], // TODO - this
+            activities: await searchPublicDocs(query),
+          },
+        },
+        { status: 200 },
+      );
     case "loadPromotedContent.php":
-      return NextResponse.json({ 
-        success: true,
-        carouselData: {}
-        }, { status: 200 });
+      return NextResponse.json(
+        {
+          success: true,
+          carouselData: {},
+        },
+        { status: 200 },
+      );
     case "getPortfolioEditorData.php":
       const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
       const editorData = await getDocEditorData(doenetId);
-      console.log(doenetId);
-      return NextResponse.json( editorData, { status: 200 });
+      // console.log(doenetId);
+      return NextResponse.json(editorData, { status: 200 });
     case "getPortfolio.php":
-      return NextResponse.json(
-        await listUserDocs(loggedInUserId), { status: 200 });
+      return NextResponse.json(await listUserDocs(loggedInUserId), {
+        status: 200,
+      });
     case "loadProfile.php":
-      return NextResponse.json({ 
-        'profile' : {
-          'screenName' :'',
-          'email' : loggedInEmail,
-          'firstName' :'',
-          'lastName' :'',
-          'profilePicture' : 'anonymous',
-          'trackingConsent' : true,
-          'signedIn' : '0',
-          'userId' : '',
-          'canUpload' : '0'
-      }}, { status: 200 });
+      return NextResponse.json(
+        {
+          profile: {
+            screenName: "",
+            email: loggedInEmail,
+            firstName: "",
+            lastName: "",
+            profilePicture: "anonymous",
+            trackingConsent: true,
+            signedIn: "0",
+            userId: "",
+            canUpload: "0",
+          },
+        },
+        { status: 200 },
+      );
+
+    case "getPortfolioActivityView.php": {
+      const doenetId = Number(request.nextUrl.searchParams.get("doenetId"));
+      const viewerData = await getDocViewerData(doenetId);
+      return NextResponse.json(viewerData, { status: 200 });
+    }
     case "checkForCommunityAdmin.php":
       return NextResponse.json({ isAdmin: true }, { status: 200 });
-    case "hello":
-      return NextResponse.json({ message: "Hello World" }, { status: 200 });
+    case "getPorfolioCourseId.php":
+      return NextResponse.json({}, { status: 200 });
+    case "loadPromotedContentGroups.php":
+      return NextResponse.json({}, { status: 200 });
     default:
-      return NextResponse.json({ message: "Not valid API" }, { status: 200 });
+      return NextResponse.json({ message: "Not valid API" }, { status: 500 });
   }
 }
 
 // To handle a POST request to /api
-export async function POST(request: NextApiRequest, params: {params: {uri: string} }) {
-  const prisma = new PrismaClient()
+export async function POST(
+  request: NextApiRequest,
+  params: { params: { uri: string } },
+) {
+  const prisma = new PrismaClient();
 
   switch (params.params.uri) {
     case "saveDoenetML.php":
@@ -150,8 +191,8 @@ export async function POST(request: NextApiRequest, params: {params: {uri: strin
       //console.log(request);
       const doenetML = body.doenetML;
       const docId = Number(body.pageId);
-      saveDoc({docId, content:doenetML});
-      return NextResponse.json({ success:true}, { status: 200 });
+      saveDoc({ docId, content: doenetML });
+      return NextResponse.json({ success: true }, { status: 200 });
     case "updatePortfolioActivitySettings.php": {
       const body = await request.json();
 
@@ -161,8 +202,8 @@ export async function POST(request: NextApiRequest, params: {params: {uri: strin
       // TODO - deal with learning outcomes
       const learningOutcomes = body.learningOutcomes;
       const isPublic = Boolean(body.public);
-      saveDoc({docId, imagePath, name:label, isPublic});
-      return NextResponse.json({ success:true}, { status: 200 });
+      saveDoc({ docId, imagePath, name: label, isPublic });
+      return NextResponse.json({ success: true }, { status: 200 });
     }
   }
 }
