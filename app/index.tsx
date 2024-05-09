@@ -15,7 +15,7 @@ import { MathJaxContext } from "better-react-mathjax";
 
 // import { mathjaxConfig } from "./Core/utils/math";
 
-// TODO - move this 
+// TODO - move this
 export const mathjaxConfig = {
   showProcessingMessages: false,
   "fast-preview": {
@@ -191,6 +191,11 @@ const router = createBrowserRouter([
           <SiteHeader />
         </ChakraProvider>
       </>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
     ),
     children: [
       {
@@ -507,10 +512,10 @@ const router = createBrowserRouter([
 
 export default function IndexPage() {
   return (
-  <RecoilRoot>
-    {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+    <RecoilRoot>
+      {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
 
-    <RouterProvider router={router} />
-  </RecoilRoot>
-)
+      <RouterProvider router={router} />
+    </RecoilRoot>
+  );
 }
