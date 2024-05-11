@@ -10,9 +10,9 @@ datasource db {
 model activities {
   activityId    Int             @id @unique(map: "activityId_UNIQUE") @default(autoincrement())
   owner         Int
-  name          String?         
-  createdAt     DateTime?       
-  lastEdited    DateTime?       
+  name          String?
+  createdAt     DateTime?
+  lastEdited    DateTime?
   users         users           @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_users1")
   activityItems activityItems[]
   assignments   assignments[]
@@ -59,12 +59,14 @@ model assignments {
 }
 
 model documentVersions {
-  version         Int
-  docId           Int
-  cid             String?           
-  createdAt       DateTime?         
-  assignmentItems assignmentItems[]
-  documents       documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documents_activities1")
+  version          Int
+  docId            Int
+  cid              String?
+  createdAt        DateTime?
+  doenetmlVersion  Int
+  assignmentItems  assignmentItems[]
+  documents        documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documents_activities1")
+  doenetmlVersions doenetmlVersions  @relation(fields: [doenetmlVersion], references: [versionId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documentVersions_doenetmlVersions")
 
   @@id([version, docId])
   @@index([docId], map: "fk_documents_activities1_idx")
@@ -73,17 +75,31 @@ model documentVersions {
 model documents {
   docId            Int                @id @unique(map: "docId_UNIQUE") @default(autoincrement())
   owner            Int
-  contentLocation  String?            
-  lastEdited       DateTime?          
-  name             String?            
+  contentLocation  String?
+  lastEdited       DateTime?
+  name             String?
   isPublic         Boolean?
   isDeleted        Boolean?
   imagePath        String?
+  doenetmlVersion  Int
   activityItems    activityItems[]
   documentVersions documentVersions[]
   users            users              @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_users")
+  doenetmlVersions doenetmlVersions   @relation(fields: [doenetmlVersion], references: [versionId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documents_doenetmlVersions")
 
   @@index([owner], map: "fk_activities_users_idx")
+}
+
+model doenetmlVersions {
+  versionId          Int                @id @unique(map: "versionId_UNIQUE") @default(autoincrement())
+  displayedVersion   String             @unique(map: "displayedVersion_UNIQUE")
+  fullVersion        String
+  default            Boolean            @default(false)
+  deprecated         Boolean            @default(false)
+  removed            Boolean            @default(false)
+  deprecationMessage String             @default("")
+  documents          documents[]
+  documentVersions   documentVersions[]
 }
 
 model studentAssignmentResponses {
@@ -103,7 +119,7 @@ model studentItemResponses {
   docVersion      Int
   docId           Int
   userId          Int
-  response        String?         
+  response        String?
   assignmentItems assignmentItems @relation(fields: [assignmentId, docVersion, docId], references: [assignmentId, docVersion, docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_assignmentItems1")
   users           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_users1")
 
