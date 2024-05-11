@@ -206,8 +206,8 @@ export async function POST(
       // TODO - deal with learning outcomes
       const learningOutcomes = body.learningOutcomes;
       const isPublic = body.public === "true";
-      const doenetmlVersion = Number(body.doenetmlVersion);
-      saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersion });
+      const doenetmlVersionId = Number(body.doenetmlVersionId);
+      saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersionId });
       return NextResponse.json({ success: true }, { status: 200 });
     }
   }
