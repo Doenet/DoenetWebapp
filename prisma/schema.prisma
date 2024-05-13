@@ -8,113 +8,129 @@ datasource db {
 }
 
 model activities {
-  activityId    Int             @id @unique(map: "activityId_UNIQUE") @default(autoincrement())
-  owner         Int
-  name          String?         
-  createdAt     DateTime?       
-  lastEdited    DateTime?       
-  users         users           @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_users1")
+  activityId    Int             @id @unique() @default(autoincrement())
+  ownerId       Int
+  name          String?
+  createdAt     DateTime?
+  lastEdited    DateTime?
+  owner         users           @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   activityItems activityItems[]
   assignments   assignments[]
 
-  @@index([owner], map: "fk_assignments_users1_idx")
+  @@index([ownerId])
 }
 
 model activityItems {
   activityId Int
   docId      Int
-  activities activities @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_has_documents_activities1")
-  documents  documents  @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_has_documents_documents1")
+  activity   activities @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
+  document   documents  @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([activityId, docId])
-  @@index([activityId], map: "fk_activities_has_documents_activities1_idx")
-  @@index([docId], map: "fk_activities_has_documents_documents1_idx")
+  @@index([activityId])
+  @@index([docId])
 }
 
 model assignmentItems {
   assignmentId         Int
-  docVersion           Int
+  docVersionId         Int
   docId                Int
-  assignments          assignments            @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_documentVersions_assignments1")
-  documentVersions     documentVersions       @relation(fields: [docVersion, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_documentVersions_documentVersions1")
+  assignment           assignments            @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  documentVersion      documentVersions       @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
   studentItemResponses studentItemResponses[]
 
-  @@id([assignmentId, docVersion, docId])
-  @@index([assignmentId], map: "fk_assignments_has_documentVersions_assignments1_idx")
-  @@index([docVersion, docId], map: "fk_assignments_has_documentVersions_documentVersions1_idx")
+  @@id([assignmentId, docVersionId, docId])
+  @@index([assignmentId])
+  @@index([docVersionId, docId])
 }
 
 model assignments {
-  assignmentId               Int                          @id @unique(map: "assignmentId_UNIQUE") @default(autoincrement())
+  assignmentId               Int                          @id @unique @default(autoincrement())
   classCode                  String?                      @db.VarChar(45)
   activityId                 Int
-  owner                      Int
+  ownerId                    Int
   assignmentItems            assignmentItems[]
-  activities                 activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_activities1")
-  users                      users                        @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_users2")
+  activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
+  owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   studentAssignmentResponses studentAssignmentResponses[]
 
-  @@index([activityId], map: "fk_assignments_activities1_idx")
-  @@index([owner], map: "fk_assignments_users2_idx")
+  @@index([activityId])
+  @@index([ownerId])
 }
 
 model documentVersions {
-  version         Int
-  docId           Int
-  cid             String?           
-  createdAt       DateTime?         
-  assignmentItems assignmentItems[]
-  documents       documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_documents_activities1")
+  version           Int
+  docId             Int
+  cid               String?
+  createdAt         DateTime?
+  doenetmlVersionId Int
+  assignmentItems   assignmentItems[]
+  document          documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion   doenetmlVersions  @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([version, docId])
-  @@index([docId], map: "fk_documents_activities1_idx")
+  @@index([docId])
 }
 
 model documents {
-  docId            Int                @id @unique(map: "docId_UNIQUE") @default(autoincrement())
-  owner            Int
-  contentLocation  String?            
-  lastEdited       DateTime?          
-  name             String?            
-  isPublic         Boolean?
-  isDeleted        Boolean?
-  imagePath        String?
-  activityItems    activityItems[]
-  documentVersions documentVersions[]
-  users            users              @relation(fields: [owner], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_activities_users")
+  docId             Int                @id @unique @default(autoincrement())
+  ownerId           Int
+  contentLocation   String?
+  lastEdited        DateTime?
+  name              String?
+  isPublic          Boolean?
+  isDeleted         Boolean?
+  imagePath         String?
+  doenetmlVersionId Int
+  activityItems     activityItems[]
+  documentVersions  documentVersions[]
+  owner             users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion   doenetmlVersions   @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([owner], map: "fk_activities_users_idx")
+  @@index([ownerId])
+}
+
+model doenetmlVersions {
+  versionId          Int                @id @unique @default(autoincrement())
+  displayedVersion   String             @unique
+  fullVersion        String
+  default            Boolean            @default(false)
+  deprecated         Boolean            @default(false)
+  removed            Boolean            @default(false)
+  deprecationMessage String             @default("")
+  documents          documents[]
+  documentVersions   documentVersions[]
 }
 
 model studentAssignmentResponses {
   assignmentId Int
   userId       Int
   score        Float?
-  assignments  assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_users_assignments1")
-  users        users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignments_has_users_users1")
+  assignment   assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  user         users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([assignmentId, userId])
-  @@index([assignmentId], map: "fk_assignments_has_users_assignments1_idx")
-  @@index([userId], map: "fk_assignments_has_users_users1_idx")
+  @@index([assignmentId])
+  @@index([userId])
 }
 
 model studentItemResponses {
-  assignmentId    Int
-  docVersion      Int
-  docId           Int
-  userId          Int
-  response        String?         
-  assignmentItems assignmentItems @relation(fields: [assignmentId, docVersion, docId], references: [assignmentId, docVersion, docId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_assignmentItems1")
-  users           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_assignmentItems_has_users_users1")
+  assignmentId   Int
+  docVersionId   Int
+  docId          Int
+  userId         Int
+  response       String?
+  assignmentItem assignmentItems @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
+  user           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([assignmentId, docVersion, docId, userId])
-  @@index([assignmentId, docVersion, docId], map: "fk_assignmentItems_has_users_assignmentItems1_idx")
-  @@index([userId], map: "fk_assignmentItems_has_users_users1_idx")
+  @@id([assignmentId, docVersionId, docId, userId])
+  @@index([assignmentId, docVersionId, docId])
+  @@index([userId])
 }
 
 model users {
   userId                     Int                          @id @default(autoincrement())
-  email                      String                       @unique(map: "email_UNIQUE") @db.VarChar(45)
+  email                      String                       @unique @db.VarChar(45)
   activities                 activities[]
   assignments                assignments[]
   documents                  documents[]

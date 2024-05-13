@@ -8,6 +8,7 @@ import {
   findOrCreateUser,
   getDocEditorData,
   getDocViewerData,
+  getAllDoenetmlVersions,
   listUserDocs,
   saveDoc,
   searchPublicDocs,
@@ -140,6 +141,9 @@ export async function GET(
       const editorData = await getDocEditorData(doenetId);
       // console.log(doenetId);
       return NextResponse.json(editorData, { status: 200 });
+    case "getAllDoenetmlVersions.php":
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      return NextResponse.json(allDoenetmlVersions, { status: 200 });
     case "getPortfolio.php":
       return NextResponse.json(await listUserDocs(loggedInUserId), {
         status: 200,
@@ -201,8 +205,9 @@ export async function POST(
       const label = body.label;
       // TODO - deal with learning outcomes
       const learningOutcomes = body.learningOutcomes;
-      const isPublic = Boolean(body.public);
-      saveDoc({ docId, imagePath, name: label, isPublic });
+      const isPublic = body.public === "true";
+      const doenetmlVersionId = Number(body.doenetmlVersionId);
+      saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersionId });
       return NextResponse.json({ success: true }, { status: 200 });
     }
   }

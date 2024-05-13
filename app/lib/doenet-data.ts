@@ -4,13 +4,18 @@ import { unstable_noStore as noStore } from "next/cache";
 
 const prisma = new PrismaClient();
 
-export async function createDocument(owner: number) {
+export async function createDocument(ownerId: number) {
+  let defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow({
+    where: { default: true },
+  });
+
   const result = await prisma.documents.create({
     data: {
-      owner,
+      ownerId,
       contentLocation: "",
       name: "untitled doc",
       imagePath: "/activity_default.jpg",
+      doenetmlVersionId: defaultDoenetmlVersion.versionId,
     },
   });
   return result.docId;
@@ -30,16 +35,24 @@ export async function saveDoc({
   name,
   imagePath,
   isPublic,
+  doenetmlVersionId,
 }: {
   docId: number;
   content?: string;
   name?: string;
   isPublic?: boolean;
   imagePath?: string;
+  doenetmlVersionId?: number;
 }) {
   return await prisma.documents.update({
     where: { docId },
-    data: { contentLocation: content, name, isPublic, imagePath },
+    data: {
+      contentLocation: content,
+      name,
+      isPublic,
+      imagePath,
+      doenetmlVersionId,
+    },
   });
 }
 
@@ -52,8 +65,10 @@ export async function getDoc(docId: number) {
 
 // TODO - access control
 export async function getDocEditorData(docId: number) {
-  let doc = await prisma.documents.findFirstOrThrow({ where: { docId } });
-  console.log({ doc });
+  let doc = await prisma.documents.findFirstOrThrow({
+    where: { docId },
+    include: { doenetmlVersion: true },
+  });
   // TODO - delete, just massaging to make old client happy
   return {
     success: true,
@@ -66,6 +81,7 @@ export async function getDocEditorData(docId: number) {
       isPublic: doc.isPublic,
       version: "",
       learningOutcomes: [],
+      doenetmlVersion: doc.doenetmlVersion,
     },
     courseId: null,
   };
@@ -115,9 +131,9 @@ export async function searchPublicDocs(query: string) {
   return massaged;
 }
 
-export async function listUserDocs(owner: number) {
+export async function listUserDocs(ownerId: number) {
   let ret = await prisma.documents.findMany({
-    where: { owner, OR: [{ isDeleted: false }, { isDeleted: null }] },
+    where: { ownerId, OR: [{ isDeleted: false }, { isDeleted: null }] },
   });
   // TODO - delete, just massaging to make old client happy
   let massaged = ret.map((doc) => {
@@ -152,4 +168,16 @@ export async function findOrCreateUser(email: string) {
 export async function createUser(email: string) {
   const result = await prisma.users.create({ data: { email } });
   return result.userId;
+}
+
+export async function getAllDoenetmlVersions() {
+  const allDoenetmlVersions = await prisma.doenetmlVersions.findMany({
+    where: {
+      removed: false,
+    },
+    orderBy: {
+      displayedVersion: "asc",
+    },
+  });
+  return allDoenetmlVersions;
 }
